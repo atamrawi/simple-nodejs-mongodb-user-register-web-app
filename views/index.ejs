@@ -1,0 +1,88 @@
+<%- include('layout/header') %>
+
+<div class="container mt-5">
+    <h2 class="mb-4">User List</h2>
+    
+    <% if (message) { %>
+        <div class="alert alert-dismissible fade show alert-<%= message.type %>" role="alert">
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong><%= message.message %></strong>
+        </div>
+    <% } %>
+
+    
+
+    <% if (users.length > 0) { %>
+        <!-- Search Form -->
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" value="<%= search %>" placeholder="Search by name" class="form-control">
+            <input type="hidden" name="page" value="<%= currentPage %>">
+            <input type="hidden" name="limit" value="<%= limit %>">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <!-- Sorting Controls -->
+    <div class="col mb-4">
+        <a href="?page=<%= currentPage %>&limit=<%= limit %>&sort=name&order=<%= sortOrder === 1 && sortField === 'name' ? 'desc' : 'asc' %>" class="btn btn-link">Sort by Name</a>
+        <a href="?page=<%= currentPage %>&limit=<%= limit %>&sort=phone&order=<%= sortOrder === 1 && sortField === 'phone' ? 'desc' : 'asc' %>" class="btn btn-link">Sort by Phone</a>
+        <a href="?page=<%= currentPage %>&limit=<%= limit %>&sort=email&order=<%= sortOrder === 1 && sortField === 'email' ? 'desc' : 'asc' %>" class="btn btn-link">Sort by Email</a>
+    </div>
+    
+        <div class="table-responsive">
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr class="table-dark">
+                        <th>Id</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Phone No</th>
+                        <th>Email ID</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach((row, index) => { %>
+                        <tr class="align-middle">
+                            <td><%= (currentPage - 1) * limit + index + 1 %></td>
+                            <td><img src="<%= row.image %>" width="50px" height="50px" alt="<%= row.name %>" class="img-thumbnail"></td>
+                            <td><%= row.name %></td>
+                            <td><%= row.phone %></td>
+                            <td><%= row.email %></td>
+                            <td>
+                                <a href="/edit/<%= row._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
+                                <a href="/delete/<%= row._id %>" class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&sort=<%= sortField %>&order=<%= sortOrder %>&search=<%= search %>">Previous</a>
+            <% } %>
+            
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>&limit=<%= limit %>&sort=<%= sortField %>&order=<%= sortOrder %>&search=<%= search %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&sort=<%= sortField %>&order=<%= sortOrder %>&search=<%= search %>">Next</a>
+            <% } %>
+        </div>
+    <% } else { %>
+        <h1 class="text-center text-secondary mt-5">No Users Found.</h1>
+    <% } %>
+    
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+<%- include('layout/footer') %>
