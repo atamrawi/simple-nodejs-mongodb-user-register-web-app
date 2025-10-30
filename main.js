@@ -8,13 +8,19 @@ const app = express();
 const PORT = process.env.PORT || 5500;
 
 // db connection
-mongoose.connect(process.env.DB_URL,{
+// Support multiple environment variable names and provide a sensible default when running in Docker
+const DB_URI = process.env.DB_URL || process.env.MONGODB_URI || 'mongodb://db:27017/pollapp';
+
+mongoose.connect(DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
+})
+.then(() => console.log(`Connected to MongoDB: ${DB_URI}`))
+.catch((err) => {
+    console.error('Failed to connect to MongoDB', err);
+    // Crash the process so Docker / nodemon can restart or show the error in logs.
+    process.exit(1);
 });
-const db = mongoose.connection;
-db.on('error', (error)=> console.log(error));
-db.once('open', ()=>console.log('Db Connection established successfully'));
 
 // middleware
 app.use(express.urlencoded({extended:false}));
